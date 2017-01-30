@@ -18,7 +18,6 @@ func AddController (r *mux.Router,controller controllers.Controller) {
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
-	return
 }
 
 //FIXME : delete, just for test pointers
@@ -30,5 +29,4 @@ func AddTodoController (r *mux.Router,controller *controllers.TodoController) {
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
-	return
 }

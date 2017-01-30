@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/deoliveiraromain/todo_api/db"
+	"log"
 )
 
 type TodoController struct {
@@ -41,6 +42,8 @@ func NewTodoController(db db.DB) *TodoController {
 }
 
 func (tc *TodoController) Index(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/text; charset=UTF-8")
+	log.Print("COUCOU")
 	fmt.Fprint(w, "Welcome!\n")
 }
 
