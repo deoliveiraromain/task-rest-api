@@ -15,7 +15,7 @@ func main() {
 
 	tc := controllers.NewTodoController(database)
 
-	arr := [1]controllers.Controller{tc}
-	router := routes.NewRouter(arr)
+	router := routes.NewRouter()
+	routes.AddTodoController(router,tc)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

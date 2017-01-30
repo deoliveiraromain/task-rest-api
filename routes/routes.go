@@ -5,16 +5,30 @@ import (
 	"github.com/deoliveiraromain/todo_api/controllers"
 )
 
-func NewRouter(controllers []controllers.Controller) *mux.Router {
+func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	for _, controller := range controllers {
-		for _, route := range controller.GetRoutes() {
-			router.
-			Methods(route.Method).
-				Path(route.Pattern).
-				Name(route.Name).
-				Handler(route.HandlerFunc)
-		}
-	}
 	return router
+}
+
+func AddController (r *mux.Router,controller controllers.Controller) {
+	for _, route := range controller.GetRoutes() {
+		r.
+		Methods(route.Method).
+			Path(route.Pattern).
+			Name(route.Name).
+			Handler(route.HandlerFunc)
+	}
+	return
+}
+
+//FIXME : delete, just for test pointers
+func AddTodoController (r *mux.Router,controller *controllers.TodoController) {
+	for _, route := range controller.GetRoutes() {
+		r.
+		Methods(route.Method).
+			Path(route.Pattern).
+			Name(route.Name).
+			Handler(route.HandlerFunc)
+	}
+	return
 }
