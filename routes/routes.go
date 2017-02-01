@@ -10,7 +10,7 @@ func NewRouter() *mux.Router {
 	return router
 }
 
-func AddController (r *mux.Router,controller controllers.Controller) {
+func AddController (r *mux.Router,controller controllers.Controller) *mux.Router {
 	for _, route := range controller.GetRoutes() {
 		r.
 		Methods(route.Method).
@@ -18,6 +18,7 @@ func AddController (r *mux.Router,controller controllers.Controller) {
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
+	return r
 }
 
 //FIXME : delete, just for test pointers

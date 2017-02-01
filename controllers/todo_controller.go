@@ -19,7 +19,7 @@ func (tc *TodoController) GetRoutes() Routes {
 			"Index",
 			"GET",
 			"/",
-			tc.TodoIndex,
+			tc.Index,
 		},
 		Route{
 			"TodoIndex",
@@ -30,7 +30,7 @@ func (tc *TodoController) GetRoutes() Routes {
 		Route{
 			"TodoShow",
 			"GET",
-			"/todos/{todoId}",
+			"/todo/{todoId}",
 			tc.TodoShow,
 		},
 	}
