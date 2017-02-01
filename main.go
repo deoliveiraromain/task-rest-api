@@ -23,7 +23,6 @@ func main() {
 		Name("getTodo").
 		HandlerFunc(Todo)
 	router = routes.AddController(router, tc)
-	http.Handle()
 	log.Println("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
