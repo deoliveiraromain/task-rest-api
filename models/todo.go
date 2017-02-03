@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 // AppKey is a models.Key implementation specifically for Todo models
@@ -23,10 +22,13 @@ func (t *TodoKey) String() string {
 
 // App is a Model implementation for an application in the PaaS
 type Todo struct {
+	Id        int        `json:"id"`
 	Name      string    `json:"name"`
 	Completed bool      `json:"completed"`
-	Due       time.Time `json:"due"`
+	//Due       time.Time `json:"due"`
 }
+
+type Todos []Todo
 
 // MarshalBinary is the encoding.BinaryMarshaler interface implementation
 func (t *Todo) MarshalBinary() ([]byte, error) {
