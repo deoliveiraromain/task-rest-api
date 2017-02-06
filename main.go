@@ -7,40 +7,25 @@ import (
 	"github.com/deoliveiraromain/todo_api/routes"
 	"fmt"
 	"github.com/deoliveiraromain/todo_api/handlers"
-	"github.com/deoliveiraromain/todo_api/models"
+	"gopkg.in/mgo.v2"
 )
 
-var todos models.Todos
-
-func init() {
-	todos = models.Todos{
-		models.Todo{
-			1,
-			"Write presentation",
-			false,
-			//"0001-01-01T00:00:00Z",
-		}, models.Todo{
-			2,
-			"Host meetup",
-			false,
-			//"0001-01-01T00:00:00Z",
-		}, models.Todo{
-			3,
-			"New Todo",
-			false,
-			//"0001-01-01T00:00:00Z",
-		},
-	}
-}
 func main() {
 
-	var database db.DB
-	database = db.NewMem()
+	// Connect to our local mongo
+	s, err := mgo.Dial("mongodb://localhost")
+	defer s.Close()
+
+	// Check if connection error, is mongo running?
+	if err != nil {
+		panic(err)
+	}
+	con := db.NewMongo(s, "todos", "todo")
 
 	router := routes.NewRouter()
 	router.HandleFunc("/", serveWelcome)
 
-	tc := handlers.NewTodoController(database)
+	tc := handlers.NewTodoController(con)
 	tc.Register(router)
 
 	log.Println("Listening on port 8080")
