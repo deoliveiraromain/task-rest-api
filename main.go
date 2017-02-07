@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	con := db.NewMongo(s, "todos", "todo")
+	con := db.NewMongo(s, "todos")
 
 	router := routes.NewRouter()
 	router.HandleFunc("/", serveWelcome)

@@ -2,22 +2,20 @@ package db
 
 import (
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 //Mongo is a db.DB implementation that talks to MongoDB
 type Mongo struct {
-	session        *mgo.Session
-	databaseName   string
-	collectionName string
+	Session        *mgo.Session
+	DatabaseName   string
 }
 
 // NewRedis initializes and returns a redis DB using the given raw redis.v3 client
-func NewMongo(cl *mgo.Session, db string, c string) *Mongo {
-	return &Mongo{session: cl, databaseName:db, collectionName:c}
+func NewMongo(cl *mgo.Session, db string) Mongo {
+	return Mongo{Session: cl, DatabaseName:db}
 }
 
+/*
 func (r *Mongo) FindAll(result interface{}) error {
 	return r.session.DB(r.databaseName).C(r.collectionName).Find(bson.M{}).All(result)
 }
@@ -38,3 +36,4 @@ func (r *Mongo) Save(model interface{}) error {
 func (r *Mongo) Delete(query interface{}) error {
 	return r.session.DB(r.databaseName).C(r.collectionName).Remove(query)
 }
+*/
