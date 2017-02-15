@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"net/http"
-	"github.com/deoliveiraromain/todo_api/db"
-	"github.com/gorilla/mux"
 	"encoding/json"
-	"github.com/deoliveiraromain/todo_api/models"
 	"fmt"
 	"log"
+	"net/http"
+
+	"github.com/deoliveiraromain/todo_api/db"
+	"github.com/deoliveiraromain/todo_api/models"
 	"github.com/deoliveiraromain/todo_api/repositories"
+	"github.com/gorilla/mux"
 )
 
 type TodoController struct {
@@ -16,7 +17,7 @@ type TodoController struct {
 }
 
 func NewTodoController(db db.Mongo) *TodoController {
-	tc := &TodoController{db :db}
+	tc := &TodoController{db: db}
 	return tc
 }
 func (tc *TodoController) Register(router *mux.Router) {
@@ -25,7 +26,7 @@ func (tc *TodoController) Register(router *mux.Router) {
 	router.HandleFunc("/task", tc.CreateTodo).Methods("POST")
 }
 
-func (tc *TodoController)  GetTaskByName(w http.ResponseWriter, r *http.Request) {
+func (tc *TodoController) GetTaskByName(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	session := tc.db.Session.Copy()
 	defer session.Close()
@@ -34,7 +35,7 @@ func (tc *TodoController)  GetTaskByName(w http.ResponseWriter, r *http.Request)
 	name := mux.Vars(r)["name"]
 	log.Println("Search Task By Name =>" + name)
 	task, err := repo.FindByName(name)
-	if (err != nil) {
+	if err != nil {
 		if err.Error() == "not found" {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "{message: %q}", "Task not found")
@@ -59,7 +60,7 @@ func (tc *TodoController) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 	repo := repositories.TaskRepo{session.DB(tc.db.DatabaseName).C("todo")}
 	tasks, err := repo.All()
-	if (err != nil) {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "{message: %q}", "Database error")
 		log.Println("Failed getting tasks: ", err)
@@ -95,7 +96,7 @@ func (tc *TodoController) CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", r.URL.Path + "/" + task.Data.Name)
+	w.Header().Set("Location", r.URL.Path+"/"+task.Data.Name)
 	json.NewEncoder(w).Encode(task)
 	w.WriteHeader(http.StatusCreated)
 }
