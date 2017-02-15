@@ -1,15 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"github.com/deoliveiraromain/todo_api/db"
+	"github.com/deoliveiraromain/todo_api/handlers"
+	"github.com/deoliveiraromain/todo_api/routes"
+	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"
-	"github.com/deoliveiraromain/todo_api/db"
-	"github.com/deoliveiraromain/todo_api/routes"
-	"fmt"
-	"github.com/deoliveiraromain/todo_api/handlers"
-	"gopkg.in/mgo.v2"
 )
-
 func main() {
 
 	// Connect to our local mongo
