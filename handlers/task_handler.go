@@ -2,100 +2,136 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
+
 	"github.com/deoliveiraromain/task-rest-api/db"
-	"github.com/deoliveiraromain/task-rest-api/repositories"
 	"github.com/deoliveiraromain/task-rest-api/models"
+	"github.com/deoliveiraromain/task-rest-api/repositories"
+	"github.com/gorilla/mux"
 )
 
-type TodoController struct {
+//TodoController : struct for task Controller with mongo repo
+type TaskController struct {
 	db db.Mongo
 }
 
-func NewTodoController(db db.Mongo) *TodoController {
-	tc := &TodoController{db: db}
+func NewTaskController(db db.Mongo) *TaskController {
+	tc := &TaskController{db: db}
 	return tc
 }
-func (tc *TodoController) Register(router *mux.Router) {
-	router.HandleFunc("/tasks", tc.GetAllTasks).Methods("GET")
-	router.HandleFunc("/task/{name}", tc.GetTaskByName).Methods("GET")
-	router.HandleFunc("/task", tc.CreateTodo).Methods("POST")
+func (tc *TaskController) Register(router *mux.Router) {
+	router.HandleFunc("/tasks", tc.getAllTasks).Methods("GET")
+	router.HandleFunc("/task/{name}", tc.getTaskByName).Methods("GET")
+	router.HandleFunc("/task", tc.createTask).Methods("POST")
+	router.HandleFunc("/task/{name}", tc.updateTask).Methods("POST")
 }
 
-func (tc *TodoController) GetTaskByName(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+func (tc *TaskController) getTaskByName(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json; charset=UTF-8")
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{session.DB(tc.db.DatabaseName).C("todo")}
+	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
 
 	name := mux.Vars(r)["name"]
-	log.Println("Search Task By Name =>" + name)
+	log.Println("search Task By Name =>" + name)
 	task, err := repo.FindByName(name)
 	if err != nil {
 		if err.Error() == "not found" {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "{message: %q}", "Task not found")
-			return
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "{message: %q}", "Database error")
-			log.Println("Failed getting task: ", err)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			log.Println("Task "+name+"not found", err)
 			return
 		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Failed getting task: ", err)
+		return
 	}
 	err = json.NewEncoder(w).Encode(task)
 	if err != nil {
 		panic(err)
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
-func (tc *TodoController) GetAllTasks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+func (tc *TaskController) getAllTasks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json; charset=UTF-8")
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{session.DB(tc.db.DatabaseName).C("todo")}
+	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
 	tasks, err := repo.All()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "{message: %q}", "Database error")
 		log.Println("Failed getting tasks: ", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = json.NewEncoder(w).Encode(tasks)
 	if err != nil {
 		panic(err)
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
-func (tc *TodoController) CreateTodo(w http.ResponseWriter, r *http.Request) {
+func (tc *TaskController) createTask(w http.ResponseWriter, r *http.Request) {
 	var task models.TaskResource
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&task)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "{message: %q}", "Incorrect body")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println("Incorrect Body from request : ", err)
 		return
 	}
 
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{session.DB(tc.db.DatabaseName).C("todo")}
+	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
 
 	err = repo.Create(&task.Data)
 	if err != nil {
-		fmt.Fprintf(w, "{message: %q}", "Database error")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println("Failed insert task: ", err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", r.URL.Path + "/" + task.Data.Name)
-	json.NewEncoder(w).Encode(task)
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Location", r.URL.Path+"/"+task.Data.Name)
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(task)
+
+}
+
+func (tc *TaskController) updateTask(w http.ResponseWriter, r *http.Request) {
+	var task models.TaskResource
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&task)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println("Incorrect Body from request : ", err)
+		return
+	}
+	session := tc.db.Session.Copy()
+	defer session.Close()
+	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
+
+	name := mux.Vars(r)["name"]
+	log.Println("search Task By Name =>" + name)
+	taskDb, err := repo.FindByName(name)
+	if err != nil {
+		if err.Error() == "not found" {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			log.Println("Task "+name+"not found", err)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Failed getting task: ", err)
+		return
+	}
+
+	err = repo.Update(&taskDb.Data, &task.Data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Failed update task: ", err)
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Location", r.URL.Path+"/"+task.Data.Name)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(task)
+
 }

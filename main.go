@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/deoliveiraromain/task-rest-api/db"
 	"github.com/deoliveiraromain/task-rest-api/handlers"
 	"github.com/deoliveiraromain/task-rest-api/routes"
 	"gopkg.in/mgo.v2"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 	router := routes.NewRouter()
 	router.HandleFunc("/", serveWelcome)
 
-	tc := handlers.NewTodoController(con)
+	tc := handlers.NewTaskController(con)
 	tc.Register(router)
 
 	log.Println("Listening on port 8080")

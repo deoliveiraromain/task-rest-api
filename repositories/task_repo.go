@@ -1,14 +1,17 @@
 package repositories
 
 import (
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2"
 	"github.com/deoliveiraromain/task-rest-api/models"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type TaskRepo struct {
 	Coll *mgo.Collection
 }
+
+//TaskRepoColl : Name of task collection in mongo
+var TaskRepoColl = "todo"
 
 func (r *TaskRepo) All() (models.TaskCollection, error) {
 	result := models.TaskCollection{[]models.Task{}}
@@ -22,7 +25,7 @@ func (r *TaskRepo) All() (models.TaskCollection, error) {
 
 func (r *TaskRepo) FindByName(query string) (models.TaskResource, error) {
 	result := models.TaskResource{}
-	err := r.Coll.Find(bson.M{"name" : query}).One(&result.Data)
+	err := r.Coll.Find(bson.M{"name": query}).One(&result.Data)
 	if err != nil {
 		return result, err
 	}
@@ -41,8 +44,8 @@ func (r *TaskRepo) Create(task *models.Task) error {
 	return nil
 }
 
-func (r *TaskRepo) Update(task *models.Task) error {
-	err := r.Coll.UpdateId(task.Id, task)
+func (r *TaskRepo) Update(taskDb *models.Task, task *models.Task) error {
+	err := r.Coll.UpdateId(taskDb.Id, task)
 	if err != nil {
 		return err
 	}
