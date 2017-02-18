@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/deoliveiraromain/todo_api/db"
-	"github.com/deoliveiraromain/todo_api/models"
-	"github.com/deoliveiraromain/todo_api/repositories"
 	"github.com/gorilla/mux"
+	"github.com/deoliveiraromain/task-rest-api/db"
+	"github.com/deoliveiraromain/task-rest-api/repositories"
+	"github.com/deoliveiraromain/task-rest-api/models"
 )
 
 type TodoController struct {
@@ -96,7 +95,7 @@ func (tc *TodoController) CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", r.URL.Path+"/"+task.Data.Name)
+	w.Header().Set("Location", r.URL.Path + "/" + task.Data.Name)
 	json.NewEncoder(w).Encode(task)
 	w.WriteHeader(http.StatusCreated)
 }

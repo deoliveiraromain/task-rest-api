@@ -3,7 +3,7 @@ package repositories
 import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2"
-	"github.com/deoliveiraromain/todo_api/models"
+	"github.com/deoliveiraromain/task-rest-api/models"
 )
 
 type TaskRepo struct {
