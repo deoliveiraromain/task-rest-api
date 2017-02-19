@@ -41,7 +41,7 @@ func main() {
 	tc := handlers.NewTaskController(con)
 	tc.Register(router)
 
-	portStr := fmt.Sprintf(":%d", conf.Port)
+	portStr := fmt.Sprintf(":%s", conf.Port)
 	log.Printf("Serving on %s", portStr)
 	log.Fatal(http.ListenAndServe(portStr, router))
 }
