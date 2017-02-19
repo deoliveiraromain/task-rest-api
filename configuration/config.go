@@ -10,7 +10,7 @@ const (
 
 // Config is the envconfig-compatible configuration struct for this server. See https://github.com/kelseyhightower/envconfig for more detail
 type Config struct {
-	Port      string `envconfig:"PORT" default:"8888"`
+	Port      string `envconfig:"PORT" default:"8080"`
 	MongoHost string `envconfig:"MONGO_HOST" default:"localhost"`
 }
 

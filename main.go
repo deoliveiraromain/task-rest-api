@@ -25,13 +25,8 @@ func main() {
 	// Connect to our local mongo
 	log.Printf("Config port %s", conf.Port)
 	log.Printf("Config MongoHost %s", conf.MongoHost)
-	//s, err := mgo.Dial("mongodb://" + conf.MongoHost + ":27017")
 	maxWait := time.Duration(5 * time.Second)
 	s, err := mgo.DialWithTimeout("mongodb://"+conf.MongoHost+":27017", maxWait)
-	//s, err := mgo.DialWithTimeout("mongodb://172.19.0.2:27017", maxWait)
-	//ips, err := net.LookupHost(conf.MongoHost)
-	//session, err := mgo.Dial(mongoConnectionString)
-
 	defer s.Close()
 
 	// Check if connection error, is mongo running?
