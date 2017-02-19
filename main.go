@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/deoliveiraromain/task-rest-api/configuration"
 	"github.com/deoliveiraromain/task-rest-api/db"
 	"github.com/deoliveiraromain/task-rest-api/handlers"
 	"github.com/deoliveiraromain/task-rest-api/routes"
