@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	AppName = "task_api"
+	AppName = "TASK_API"
 )
 
 // Config is the envconfig-compatible configuration struct for this server. See https://github.com/kelseyhightower/envconfig for more detail
 type Config struct {
-	Port      int    `envconfig:"API_PORT" default:"8080"`
+	Port      int    `envconfig:"PORT" default:"8080"`
 	MongoHost string `envconfig:"MONGO_HOST" default:"localhost"`
 }
 
