@@ -1,0 +1,19 @@
+version : '2'
+services:
+         mongo:
+               image: mongo
+               ports:
+                  - "27017:27017"
+               #expose:
+               #  - "27017"
+               volumes:
+                  - "/home/deoliveira/work/docker/data:/data/db"
+         task-api:
+               build: 
+                     context: .
+                     args:
+                          - API_PORT= 8090
+                          - MONGO_HOST= mongo
+               image: deoliveira/task-api
+               depends_on:
+                  - mongo
