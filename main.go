@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/deoliveiraromain/task-rest-api/db"
 	"github.com/deoliveiraromain/task-rest-api/handlers"
@@ -12,9 +13,15 @@ import (
 )
 
 func main() {
-
+	//get config
+	conf, err := configuration.GetConfig()
+	if err != nil {
+		log.Printf("Error getting config [%s]", err)
+		os.Exit(1)
+	}
 	// Connect to our local mongo
-	s, err := mgo.Dial("mongodb://localhost")
+
+	s, err := mgo.Dial("mongodb://" + conf.MongoHost)
 	defer s.Close()
 
 	// Check if connection error, is mongo running?
@@ -29,8 +36,9 @@ func main() {
 	tc := handlers.NewTaskController(con)
 	tc.Register(router)
 
-	log.Println("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	portStr := fmt.Sprintf(":%d", conf.Port)
+	log.Printf("Serving on %s", portStr)
+	log.Fatal(http.ListenAndServe(portStr, router))
 }
 
 // ServeHTTP is the http.Handler interface implementation
