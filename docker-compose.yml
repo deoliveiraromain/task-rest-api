@@ -17,3 +17,5 @@ services:
                image: deoliveira/task-api
                depends_on:
                   - mongo
+               ports:
+                  - "8090:8080"
