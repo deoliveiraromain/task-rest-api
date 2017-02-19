@@ -12,8 +12,8 @@ services:
                build:
                      context: .
                      args:
-                          - TASK_API_PORT= 8090
-                          - TASK_API_MONGO_HOST= mongo
+                          - TASK_API_PORT=8090
+                          - TASK_API_MONGO_HOST=mongo
                image: deoliveira/task-api
                depends_on:
                   - mongo

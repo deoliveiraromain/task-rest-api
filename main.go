@@ -27,8 +27,8 @@ func main() {
 	log.Printf("Config MongoHost %s", conf.MongoHost)
 	//s, err := mgo.Dial("mongodb://" + conf.MongoHost + ":27017")
 	maxWait := time.Duration(5 * time.Second)
-	//s, err := mgo.DialWithTimeout("mongodb://"+conf.MongoHost+":27017", maxWait)
-	s, err := mgo.DialWithTimeout("mongodb://172.19.0.2:27017", maxWait)
+	s, err := mgo.DialWithTimeout("mongodb://"+conf.MongoHost+":27017", maxWait)
+	//s, err := mgo.DialWithTimeout("mongodb://172.19.0.2:27017", maxWait)
 	//ips, err := net.LookupHost(conf.MongoHost)
 	//session, err := mgo.Dial(mongoConnectionString)
 
