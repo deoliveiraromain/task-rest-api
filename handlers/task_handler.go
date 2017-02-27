@@ -31,7 +31,7 @@ func (tc *TaskController) getTaskByName(w http.ResponseWriter, r *http.Request) 
 	w.Header().Add("Content-Type", "application/json; charset=UTF-8")
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
+	repo := repositories.NewTaskRepo(session, tc.db.DatabaseName)
 
 	name := mux.Vars(r)["name"]
 	log.Println("search Task By Name =>" + name)
@@ -46,8 +46,7 @@ func (tc *TaskController) getTaskByName(w http.ResponseWriter, r *http.Request) 
 		log.Println("Failed getting task: ", err)
 		return
 	}
-	err = json.NewEncoder(w).Encode(task)
-	if err != nil {
+	if err = json.NewEncoder(w).Encode(task); err != nil {
 		panic(err)
 	}
 }
@@ -56,15 +55,14 @@ func (tc *TaskController) getAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json; charset=UTF-8")
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
+	repo := repositories.NewTaskRepo(session, tc.db.DatabaseName)
 	tasks, err := repo.All()
 	if err != nil {
 		log.Println("Failed getting tasks: ", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = json.NewEncoder(w).Encode(tasks)
-	if err != nil {
+	if err = json.NewEncoder(w).Encode(tasks); err != nil {
 		panic(err)
 	}
 }
@@ -81,10 +79,9 @@ func (tc *TaskController) createTask(w http.ResponseWriter, r *http.Request) {
 
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
+	repo := repositories.NewTaskRepo(session, tc.db.DatabaseName)
 
-	err = repo.Create(&task.Data)
-	if err != nil {
+	if err = repo.Create(&task.Data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println("Failed insert task: ", err)
 		return
@@ -99,15 +96,14 @@ func (tc *TaskController) createTask(w http.ResponseWriter, r *http.Request) {
 func (tc *TaskController) updateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.TaskResource
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&task)
-	if err != nil {
+	if err := decoder.Decode(&task); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println("Incorrect Body from request : ", err)
 		return
 	}
 	session := tc.db.Session.Copy()
 	defer session.Close()
-	repo := repositories.TaskRepo{Coll: session.DB(tc.db.DatabaseName).C(repositories.TaskRepoColl)}
+	repo := repositories.NewTaskRepo(session, tc.db.DatabaseName)
 
 	name := mux.Vars(r)["name"]
 	log.Println("search Task By Name =>" + name)
@@ -123,8 +119,7 @@ func (tc *TaskController) updateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = repo.Update(&taskDb.Data, &task.Data)
-	if err != nil {
+	if err = repo.Update(&taskDb.Data, &task.Data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println("Failed update task: ", err)
 		return

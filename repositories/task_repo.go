@@ -11,7 +11,12 @@ type TaskRepo struct {
 }
 
 //TaskRepoColl : Name of task collection in mongo
-var TaskRepoColl = "todo"
+var taskRepoColl = "todo"
+
+func NewTaskRepo(session *mgo.Session, dbName string) *TaskRepo {
+	tc := &TaskRepo{session.DB(dbName).C(taskRepoColl)}
+	return tc
+}
 
 func (r *TaskRepo) All() (models.TaskCollection, error) {
 	result := models.TaskCollection{[]models.Task{}}
