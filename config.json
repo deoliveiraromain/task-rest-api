@@ -1,0 +1,4 @@
+{
+   "ApiPort" : "8090",
+   "MongoHost" : "localhost"
+}

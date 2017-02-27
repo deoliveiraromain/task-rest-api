@@ -1,24 +1,27 @@
 package configuration
 
 import (
-	"github.com/kelseyhightower/envconfig"
+	"io/ioutil"
+	"encoding/json"
 )
 
-const (
-	AppName = "TASK_API"
-)
 
 // Config is the envconfig-compatible configuration struct for this server. See https://github.com/kelseyhightower/envconfig for more detail
 type Config struct {
-	Port      string `envconfig:"PORT" default:"8080"`
-	MongoHost string `envconfig:"MONGO_HOST" default:"localhost"`
+	Port      string `json:"ApiPort"`
+	MongoHost string `json:"MongoHost"`
 }
 
 // GetConfig uses envconfig to populate and return a Config struct. Returns all envconfig errors if they occurred
 func GetConfig() (*Config, error) {
-	conf := new(Config)
-	if err := envconfig.Process(AppName, conf); err != nil {
+
+	file, err := ioutil.ReadFile("./config.json")
+	if err != nil {
 		return nil, err
 	}
-	return conf, nil
+	var config Config
+	if err = json.Unmarshal(file, &config); err != nil {
+		return nil, err
+	}
+	return &config, nil
 }
